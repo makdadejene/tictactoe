@@ -14,9 +14,11 @@ let random_move_strategy
   ~(pieces : Piece.t Position.Map.t)
   : Position.t
   =
-  ignore game_kind;
-  ignore pieces;
-  failwith "Implement me!"
+  let random_move =
+    List.random_element_exn
+      (Tic_tac_toe_exercises_lib.available_moves ~game_kind ~pieces)
+  in
+  random_move
 ;;
 
 (* Exercise 3.2.
@@ -89,8 +91,13 @@ let _ = score
 let compute_next_move ~(me : Piece.t) ~(game_state : Game_state.t)
   : Position.t
   =
-  ignore random_move_strategy;
   ignore me;
-  ignore game_state;
-  { Position.row = 0; column = 0 }
+  let new_move =
+    random_move_strategy
+      ~game_kind:game_state.game_kind
+      ~pieces:game_state.pieces
+  in
+  new_move
 ;;
+
+(* ignore game_state; { Position.row = 0; column = 0 } *)
