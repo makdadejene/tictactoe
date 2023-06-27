@@ -127,7 +127,7 @@ let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t)
   match game_kind
   |Tic_tac_toe ->
 
-    let x_filtered = Map.filter pieces ~f:(fun curr_var -> Piece.equal curr_val Piece.X) in
+    let x_filtered = Map.filter pieces ~f:(fun curr_var -> Piece.equal curr_var Piece.X) in
     let o_filtered = Map.filter pieces ~f:(fun curr_val -> Piece.equal curr_val Piece.O) in 
 
     let horizontal map key data = 
@@ -172,6 +172,49 @@ if win o_filtered then Evaluation.Game_over{winner: Piece.X} else Game_continues
     
 
 |Omok -> 
+
+ let x_filtered = Map.filter pieces ~f:(fun curr_var -> Piece.equal curr_var Piece.X) in
+    let o_filtered = Map.filter pieces ~f:(fun curr_val -> Piece.equal curr_val Piece.O) in 
+
+    let horizontal map key data = 
+      match(Map.find map (Position.right key), Map.find map (Position.right key), Map.find map (Position.left key), Map.find map (Position.left key)) with
+    | (Some piece_one), Some piece_two, Some piece_three, (Some piece_four )->
+    if Piece.equal piece_one data && Piece.equal piece_two data && Piece.equal piece_three data && Piece.equal piece_four data then true else false 
+    | _, _ -> false in
+
+    let vertical map key data = 
+      match(Map.find map (Position.down key), Map.find map (Position.down key), Map.find map (Position.up key), Map.find map (Position.up key))
+    with 
+    | (Some piece_one), (Some piece_two), Some piece_three, Some piece_four ->
+    if Piece.equal piece_one data && Piece.equal piece_two data && Piece.equal piece_three data && Piece.equal piece_four data then true else false 
+    | _, _ -> false in
+
+     let diagonal_one map key data = 
+      match(Map.find map (Position.right(Position.down key)), Map.find map (Position.right(Position.down key)), Map.find map ((Position.left(Position.up key), Map.find map ((Position.left(Position.up key))))
+    with 
+    | (Some piece_one), (Some piece_two), Some piece_three, Some piece_four ->
+     if Piece.equal piece_one data && Piece.equal piece_two data && Piece.equal piece_three data && Piece.equal piece_four data then true else false 
+    | _, _ -> false in
+
+    let diagonal_two map key data = 
+      match(Map.find map (Position.down(Position.right key)), Map.find map (Position.down(Position.right key)),  Map.find map (Position.up(Position.left key)), Map.find map ((Position.up(Position.left key))))
+    with 
+    | (Some piece_one), (Some piece_two), Some piece_three, Some piece_four ->
+    if Piece.equal piece_one data && Piece.equal piece_two data && Piece.equal piece_three data && Piece.equal piece_four data then true else false 
+    | _, _ -> false in
+
+  let win map = 
+    Map.exisiti map ~f:(fun pos: ~key ~data -> if Map.mem map key then 
+      horizontal map key data
+    || vertical map key data
+    ||diagonal_one map key data
+    ||diagonal_two map key data 
+else false ) in
+
+if win x_filtered then Evaluation.Game_over {winner: Piece.X} else
+if win o_filtered then Evaluation.Game_over{winner: Piece.X} else Game_continues
+
+;;
 
   (* let board_length = Game_kind.board_length game_kind in
 
