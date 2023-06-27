@@ -88,13 +88,103 @@ let available_moves
 
    After you are done with this implementation, you can uncomment out
    "evaluate" test cases found below in this file. *)
+
+(* let get_all_positions ~(game_kind : Game_kind.t) =
+  let board_length = Game_kind.board_length game_kind in
+  List.init board_length ~f:(fun row ->
+    List.init board_length ~f:(fun column ->
+      let pos = { Position.row; column } in
+      pos))
+;; *)
+
+(* let check_consecutive
+  ~(pieces : Piece.t Position.Map.t)
+  ~(pos : Position.t list)
+  ~(count: int)
+  =
+  match pos with 
+  | [] -> false 
+  | hd:: rest -> let rec check_consecutive
+  
+  true
+;; *)
+(* 
+let group get_all_positions ~game_kind (dir: string) = 
+  let board_length = Game_kind.board_length game_kind in
+  let win_length = Game_kind.win_length game_kind in 
+
+  match direction with 
+
+  | "horizontal" -> List.filter get_all_positions List.init win_length
+
+
+;; *)
+
+
 let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t)
   : Evaluation.t
   =
-  ignore pieces;
-  ignore game_kind;
-  failwith "Implement me!"
+  match game_kind
+  |Tic_tac_toe ->
+
+    let x_filtered = Map.filter pieces ~f:(fun curr_var -> Piece.equal curr_val Piece.X) in
+    let o_filtered = Map.filter pieces ~f:(fun curr_val -> Piece.equal curr_val Piece.O) in 
+
+    let horizontal map key data = 
+      match(Map.find map (Position.right key), Map.find map (Position.left key)) with
+    | (Some piece_one), (Some piece_two )->
+    if Piece.equal piece_one data && Piece.equal piece_two data then true else false 
+    | _, _ -> false in
+
+    let vertical map key data = 
+      match(Map.find map (Position.down key), Map.find map (Position.up key))
+    with 
+    | (Some piece_one), (Some piece_two) ->
+    if Piece.equal piece_one data && Piece.equal piece_two data then true else false 
+    | _, _ -> false in
+
+    let diagonal_one map key data = 
+      match(Map.find map (Position.right(Position.down key)), Map.find map ((Position.left(Position.up key))))
+    with 
+    | (Some piece_one), (Some piece_two) ->
+    if Piece.equal piece_one data && Piece.equal piece_two data then true else false 
+    | _, _ -> false in
+
+    let diagonal_two map key data = 
+      match(Map.find map (Position.down(Position.right key)), Map.find map ((Position.up(Position.left key))))
+    with 
+    | (Some piece_one), (Some piece_two) ->
+    if Piece.equal piece_one data && Piece.equal piece_two data then true else false 
+    | _, _ -> false in
+
+
+  let win map = 
+    Map.exisiti map ~f:(fun pos: ~key ~data -> if Map.mem map key then 
+      horizontal map key data
+    || vertical map key data
+    ||diagonal_one map key data
+    ||diagonal_two map key data 
+else false ) in
+
+if win x_filtered then Evaluation.Game_over {winner: Piece.X} else
+if win o_filtered then Evaluation.Game_over{winner: Piece.X} else Game_continues
+
+    
+
+|Omok -> 
+
+  (* let board_length = Game_kind.board_length game_kind in
+
+  let horizontal = List.filter(get_all_positions ~game_kind) ~f:(fun
+   check_pos -> List.init board_length) *)
+  
 ;;
+
+(* let win_length = Game_kind.win_length game_kind in *)
+
+
+
+(* ignore pieces; ignore game_kind; failwith "Implement me!" *)
 
 (* Exercise 3. *)
 let winning_moves
