@@ -56,11 +56,27 @@ let pick_winning_move_or_block_if_possible_strategy
   ~(pieces : Piece.t Position.Map.t)
   : Position.t
   =
-  match Tic_tac_toe_exercises_lib.losing_moves ~me ~game_kind ~pieces with
-  | [] -> pick_winning_move_if_possible_strategy ~me ~game_kind ~pieces
+  let avail_moves =
+    Tic_tac_toe_exercises_lib.available_moves ~game_kind ~pieces
+  in
+  match Tic_tac_toe_exercises_lib.winning_moves ~me ~game_kind ~pieces with
+  | [] ->
+    (match Tic_tac_toe_exercises_lib.losing_moves ~me ~game_kind ~pieces with
+     | [] -> pick_winning_move_if_possible_strategy ~me ~game_kind ~pieces
+     | _ ->
+       List.random_element_exn
+         (List.filter avail_moves ~f:(fun position ->
+            not
+              (List.mem
+                 (Tic_tac_toe_exercises_lib.losing_moves
+                    ~me
+                    ~game_kind
+                    ~pieces)
+                 position
+                 ~equal:Position.equal))))
   | _ ->
     List.random_element_exn
-      (Tic_tac_toe_exercises_lib.losing_moves ~me ~game_kind ~pieces)
+      (Tic_tac_toe_exercises_lib.winning_moves ~me ~game_kind ~pieces)
 ;;
 
 (* disables unused warning. Feel free to delete once it's used. *)
@@ -72,6 +88,7 @@ let score
   ~(pieces : Piece.t Position.Map.t)
   : float
   =
+  (* Tic_tac_toe_exercises_lib.evaluate ~me ~game_kind ~pieces *)
   ignore me;
   ignore game_kind;
   ignore pieces;

@@ -291,7 +291,8 @@ let winning_moves
     match
       evaluate ~game_kind ~pieces:(Map.set pieces ~key:position ~data:me)
     with
-    | Evaluation.Game_over { winner = Some _me } -> true
+    | Evaluation.Game_over { winner = Some x } ->
+      if Piece.equal x me then true else false
     | _ -> false)
 ;;
 
