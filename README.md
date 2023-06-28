@@ -419,6 +419,7 @@ successfully created game with id: '11'
 Waiting for someone to join...
 ```
 
+
 Your game will then show up as a "joinable game", and then you can click it to join it.
 Also feel free to change your "__I am:__ IP_ADDRESS" to something else. (Sadly there's no
 authentication/anything like that so pick a unique username like your favorite
