@@ -95,7 +95,7 @@ let score
   | _ -> 0.0
 ;;
 
-let _ = score
+(* let _ = score *)
 
 let rec minimax
   ~(me : Piece.t)
@@ -104,11 +104,11 @@ let rec minimax
   ~(pieces : Piece.t Position.Map.t)
   ~(curr_score : Position.t list)
   ~(depth : int)
-  : ((float), (Position.t))
+  : float
   =
   let curr = Tic_tac_toe_exercises_lib.evaluate ~game_kind ~pieces in
   match curr with
-  | Tic_tac_toe_exercises_lib.Evaluation.Game_over { winner = Some x } ->
+  | Tic_tac_toe_exercises_lib.Evaluation.Game_over { winner = Some _x } ->
     score ~me ~game_kind ~pieces
   | _ ->
     if depth = 0
@@ -119,11 +119,16 @@ let rec minimax
       in
       let curr_score =
         List.map avail_moves ~f:(fun position ->
-          let new_pieces = Map.set pieces ~key:position ~data:me in
+          let curr_piece =
+            match game_status with
+            | Turn_of piece -> piece
+            | _ -> failwith ""
+          in
+          let new_pieces = Map.set pieces ~key:position ~data:curr_piece in
           minimax
-            ~me: (Piece.flip me)
+            ~me
             ~game_kind
-            ~game_status
+            ~game_status:(Game_status.Turn_of (Piece.flip me))
             ~pieces:new_pieces
             ~curr_score
             ~depth:(depth - 1))
@@ -132,12 +137,14 @@ let rec minimax
       then (
         match List.max_elt curr_score ~compare:Float.compare with
         | Some p -> p
-        | None -> failwith "No")
+        | None -> failwith "No1")
       else (
         match List.min_elt curr_score ~compare:Float.compare with
         | Some p -> p
-        | None -> failwith "No"))
+        | None -> failwith "No2"))
 ;;
+
+let _ = minimax
 
 (* - pass in me, game_kind, pieces, current Player - check if game is over:
    match with score - if Player = me then create a variable called val = -
@@ -157,19 +164,33 @@ let rec minimax
 let compute_next_move ~(me : Piece.t) ~(game_state : Game_state.t)
   : Position.t
   =
-  ignore me;
-  
-     match minimax
-      ~me
+  (* pick_winning_move_or_block_if_possible_strategy ~me
+     ~game_kind:game_state.game_kind ~pieces:game_state.pieces ;; *)
+  let avail_moves =
+    Tic_tac_toe_exercises_lib.available_moves
       ~game_kind:game_state.game_kind
-      ~game_status:game_state.game_status
       ~pieces:game_state.pieces
-      ~curr_score: []
-      ~depth:6 with 
-      | Float.infinity -> 
-      | Float.neg_infinity ->
-      | _ ->
-
+  in
+  let curr_map =
+    List.map avail_moves ~f:(fun position ->
+      let new_pieces = Map.set game_state.pieces ~key:position ~data:me in
+      ( position
+      , minimax
+          ~me
+          ~game_kind:game_state.game_kind
+          ~game_status:game_state.game_status
+          ~pieces:new_pieces
+          ~curr_score:[]
+          ~depth:3 ))
+  in
+  match
+    List.max_elt
+      curr_map
+      ~compare:(fun (_move_one, score_one) (_move_two, score_two) ->
+      Float.compare score_one score_two)
+  with
+  | Some (x, _y) -> x
+  | None -> failwith "No3"
 ;;
 
 (* ignore game_state; { Position.row = 0; column = 0 } *)
